@@ -1,3 +1,85 @@
+/* Rebrand fonts — Basel Grotesk */
+@font-face {
+  font-family: "Basel Grotesk";
+  src: url("/fonts/Basel-Grotesk-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basel Grotesk";
+  src: url("/fonts/Basel-Grotesk-Book.woff2") format("woff2");
+  font-weight: 450;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basel Grotesk";
+  src: url("/fonts/Basel-Grotesk-Medium.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Basel Grotesk";
+  src: url("/fonts/Basel-Grotesk-Bold.woff2") format("woff2");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Rebrand fonts — Basel Grotesk Mono */
+@font-face {
+  font-family: "Basel Grotesk Mono";
+  src: url("/fonts/Basel-Grotesk-Mono-Regular.woff2") format("woff2");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Rebrand fonts — Martina Plantijn */
+@font-face {
+  font-family: "Martina Plantijn";
+  src: url("/fonts/martina-plantijn-light.woff2") format("woff2");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Martina Plantijn";
+  src: url("/fonts/martina-plantijn-light-italic.woff2") format("woff2");
+  font-weight: 300;
+  font-style: italic;
+  font-display: swap;
+}
+
+:root {
+  --font-basel-grotesk: "Basel Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-martina-plantijn: "Martina Plantijn", ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-basel-grotesk-mono: "Basel Grotesk Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  /* Arena design-system tokens (HSL triplets, light mode) */
+  --surface-primary: 36 45% 98%;
+  --surface-secondary: 0 0% 100%;
+  --surface-tertiary: 33 31% 94%;
+
+  --text-primary: 24 6% 17%;
+  --text-secondary: 30 7% 24%;
+  --text-tertiary: 35 6% 38%;
+
+  --border-faint: 30 5% 93%;
+  --border-medium: 30 9% 87%;
+
+  --interactive-cta: 60 3% 14%;
+  --interactive-cta-hover: 24 6% 23%;
+  --interactive-cta-active: 30 7% 24%;
+  --interactive-on-cta: 36 45% 98%;
+}
+
 html,
 body {
   min-height: 100%;
@@ -5,22 +87,47 @@ body {
 
 body {
   margin: 0;
-  --font-mono: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace;
+  font-family: var(--font-basel-grotesk), ui-sans-serif, system-ui, sans-serif;
+  background: hsl(var(--surface-primary));
+  color: hsl(var(--text-primary));
+  --font-mono: var(--font-basel-grotesk-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-martina-plantijn), ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  font-weight: 300;
+  letter-spacing: -0.025em;
+}
+
+code,
+pre {
+  font-family: var(--font-basel-grotesk-mono), ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
 }
 
 .radix-themes {
-  --accent-9: #000;
-  --accent-10: #111;
-  --accent-contrast: #fff;
+  --accent-9: hsl(var(--interactive-cta));
+  --accent-10: hsl(var(--interactive-cta-hover));
+  --accent-contrast: hsl(var(--interactive-on-cta));
+  --color-background: hsl(var(--surface-primary));
+  background: hsl(var(--surface-primary));
+}
+
+.rt-BaseButton {
+  border-radius: 4px;
 }
 
 .rt-Button.rt-variant-solid {
-  background: #000;
-  color: #fff;
+  background: hsl(var(--interactive-cta));
+  color: hsl(var(--interactive-on-cta));
 }
 
 .rt-Button.rt-variant-solid:hover {
-  background: #111;
+  background: hsl(var(--interactive-cta-hover));
 }
 
 .shell {
@@ -30,7 +137,7 @@ body {
 }
 
 .name-pill {
-  font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-family: var(--font-basel-grotesk-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 13px;
   font-weight: 500;
   letter-spacing: 0.01em;
@@ -49,7 +156,7 @@ body {
 }
 
 .panel {
-  background: #f5f5f5;
+  background: hsl(var(--surface-tertiary));
   border-radius: 12px;
   padding: 16px;
 }
