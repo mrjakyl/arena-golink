@@ -29,17 +29,6 @@ body {
   padding: 24px 20px 64px;
 }
 
-.mark {
-  display: inline-flex;
-  width: 28px;
-  height: 28px;
-  border-radius: 8px;
-  background: #000;
-  color: #fff;
-  align-items: center;
-  justify-content: center;
-}
-
 .name-pill {
   font-family: var(--font-mono), ui-monospace, SFMono-Regular, Menlo, monospace;
   font-size: 13px;
