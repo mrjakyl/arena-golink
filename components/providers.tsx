@@ -7,8 +7,8 @@ export function Providers({ children }: { children: ReactNode }) {
   return (
     <Theme
       appearance="light"
-      accentColor="teal"
-      grayColor="sage"
+      accentColor="gray"
+      grayColor="gray"
       radius="medium"
       scaling="100%"
     >

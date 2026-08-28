@@ -19,12 +19,12 @@ export function SetupPage() {
       <div>
         <Heading size="7">Add the browser shortcut</Heading>
         <Text as="p" color="gray" mt="2">
-          This is how Go Links is meant to be used. One custom search engine, about 30 seconds,
+          This is how Arena Go is meant to be used. One custom search engine, about 30 seconds,
           once per browser profile. Safari is not supported in this prototype.
         </Text>
       </div>
 
-      <Box p="4" style={{ background: "var(--teal-2)", borderRadius: 12 }}>
+      <Box p="4" className="panel">
         <Text size="2" weight="medium">
           Search-engine URL template
         </Text>
@@ -51,7 +51,7 @@ export function SetupPage() {
           <ul style={{ margin: 0, paddingLeft: 20, display: "grid", gap: 8 }}>
             <li>
               <Text size="3">
-                Name: <Code>Go Links</Code>
+                Name: <Code>Arena Go</Code>
               </Text>
             </li>
             <li>

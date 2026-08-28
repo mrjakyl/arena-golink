@@ -99,7 +99,7 @@ export function LinkForm(props: Props) {
       </div>
 
       {error ? (
-        <Callout.Root color="red">
+        <Callout.Root color="gray" highContrast variant="surface">
           <Callout.Icon>
             <InfoCircledIcon />
           </Callout.Icon>

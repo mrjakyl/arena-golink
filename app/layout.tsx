@@ -5,7 +5,7 @@ import { Header } from "@/components/header";
 import { Providers } from "@/components/providers";
 
 export const metadata: Metadata = {
-  title: "Go Links",
+  title: "Arena Go",
   description: "Internal nicknames for URLs",
   robots: { index: false, follow: false },
 };

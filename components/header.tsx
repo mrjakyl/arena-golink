@@ -14,19 +14,7 @@ export function Header() {
         <RadixLink asChild underline="none" highContrast>
           <NextLink href="/">
             <Flex align="center" gap="2">
-              <span
-                aria-hidden
-                style={{
-                  display: "inline-flex",
-                  width: 28,
-                  height: 28,
-                  borderRadius: 8,
-                  background: "var(--teal-9)",
-                  color: "white",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
+              <span aria-hidden className="mark">
                 <svg width="16" height="16" viewBox="0 0 32 32" fill="none">
                   <path
                     d="M7 16h13M16 9l8 7-8 7"
@@ -38,7 +26,7 @@ export function Header() {
                 </svg>
               </span>
               <Heading size="5" as="h2">
-                Go Links
+                Arena Go
               </Heading>
             </Flex>
           </NextLink>

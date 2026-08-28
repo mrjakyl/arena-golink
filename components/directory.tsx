@@ -63,7 +63,7 @@ export function Directory({ links: initial }: { links: GoLink[] }) {
   if (links.length === 0) {
     return (
       <Flex direction="column" align="start" gap="4" mt="4">
-        <Heading size="8">Go Links</Heading>
+        <Heading size="8">Arena Go</Heading>
         <Text size="4" color="gray" style={{ maxWidth: 520 }}>
           Nicknames for internal URLs, shared by everyone who can open this site.
         </Text>

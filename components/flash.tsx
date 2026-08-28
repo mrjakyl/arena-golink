@@ -18,7 +18,7 @@ export function Flash() {
   if (!message) return null;
 
   return (
-    <Callout.Root color="teal" mb="4" className="flash">
+    <Callout.Root color="gray" highContrast variant="surface" mb="4" className="flash">
       <Callout.Icon>
         <CheckCircledIcon />
       </Callout.Icon>
