@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, Flex, Heading, Link as RadixLink, Text } from "@radix-ui/themes";
+import { Button, Flex, Heading, Link as RadixLink } from "@radix-ui/themes";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 
@@ -26,9 +26,6 @@ export function Header() {
             </Flex>
           </NextLink>
         </RadixLink>
-        <Text size="2" color="gray">
-          Shared nicknames
-        </Text>
       </Flex>
       <Flex gap="2" align="center">
         <Button asChild variant="ghost" color="gray">
