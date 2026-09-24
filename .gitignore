@@ -11,6 +11,3 @@ next-env.d.ts
 !.env.example
 .vercel
 .context
-coverage
-playwright-report
-test-results

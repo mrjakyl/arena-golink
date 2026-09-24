@@ -1,96 +1,73 @@
 # Arena Path
 
-Shared, memorable shortcuts to your team’s resources. Create `wiki` pointing to your team’s documentation, then open `https://surfingcowarena.com/wiki`. With the browser shortcut configured, type **go → Tab → wiki → Enter**.
+Shared shortcuts to your team’s resources. Create `wiki` pointing at your documentation, then open `https://surfingcowarena.com/wiki` or use **go → Tab → wiki → Enter** after browser setup.
 
-The directory lets teammates search, create, edit, and delete links. Unknown shortcuts open a creation form with the name filled in. Editing a destination keeps its shortcut intact. A new installation starts empty.
+The directory supports search, create, edit, and delete. Both `/{name}` and `/go/{name}` issue non-cached HTTP 302 redirects. Unknown shortcuts open a prefilled creation form. All approved teammates can edit any link; names stay fixed when destinations change.
 
-## Access and stack
+## What’s ready
 
-- Google sign-in is required for the directory, setup, redirects, and link APIs. Only verified Google emails matching configured team domains or individual addresses are accepted.
-- Every approved teammate can create, edit, or delete any link. There are no personal owners or separate administrator roles.
-- Next.js App Router, React, TypeScript, and Radix Themes; Neon Postgres stores links and shared mutation counters. Vercel hosts the app.
-- The SQLite prototype has been replaced. Existing `data/*.sqlite` files are not read or imported; this release is intended to start with an empty Postgres database.
+- Next.js/React app with the existing Radix UI and Google team sign-in.
+- Neon Postgres storage and explicit migrations, suitable for Vercel. A new database starts empty; old SQLite files are not imported.
+- Fixes for invalid redirect URLs, repeated name query parameters, and stale directory data.
+- Small regression tests using Node’s built-in runner; no additional test framework, linter, or CI configuration.
 
-See [deployment and operations](docs/deployment.md) for Vercel, Google OAuth, Cloudflare, migrations, and recovery. [PLAN.md](PLAN.md) records the current product behavior and launch criteria.
+**Handoff:** credentials, the Vercel project, team allowlist, DNS changes, and live preview verification are deferred. Nothing has been deployed. Missing authentication configuration denies private access.
 
-## Local setup
+## Run locally
 
-Use Node **22.12 or newer within 22.x**; `.nvmrc` selects Node 22. Local development needs its own Neon database and Google OAuth configuration. There is no authentication bypass.
+Use Node 22.12 or newer within 22.x (`nvm use` selects Node 22):
 
 ```bash
-nvm use
 npm ci
 cp .env.example .env.local
 ```
 
-Fill in `.env.local` using the table below. Generate a session secret with `openssl rand -base64 32`, and register a Google OAuth **Web application** client with this authorized redirect URI:
+Fill in `.env.local` with a development Neon database and Google OAuth Web application client. Register `http://localhost:3000/api/auth/callback/google` as its authorized redirect URI. Generate a session secret with `openssl rand -base64 32`.
 
-```text
-http://localhost:3000/api/auth/callback/google
-```
+| Variable | Value |
+| --- | --- |
+| `DATABASE_URL` | Neon connection string, including its TLS options. |
+| `NEXTAUTH_URL` | `http://localhost:3000` locally; `https://surfingcowarena.com` in production. |
+| `NEXTAUTH_SECRET` | Random secret, distinct for each environment. |
+| `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` | Google OAuth client credentials for that environment. |
+| `AUTH_ALLOWED_DOMAINS` | Comma-separated exact email domains, without `@` or wildcards. |
+| `AUTH_ALLOWED_EMAILS` | Comma-separated full Google addresses for individual access. |
 
-Then initialize the database and start the app:
+At least one allowlist must have an entry. Google emails must be verified; domain matching does not include subdomains. Membership is checked on each authenticated request. Keep credentials in the gitignored environment file or Vercel settings.
 
 ```bash
 npm run db:migrate
 npm run dev
 ```
 
-Open `http://localhost:3000`, sign in using an allowed Google account, and select **New link**. Use that hostname consistently: mutation requests must come from the origin configured in `NEXTAUTH_URL`.
+Open `http://localhost:3000`, sign in, and create a link. Use the hostname in `NEXTAUTH_URL` consistently: mutations require its exact origin. Local development requires real Google/Neon configuration; there is no login bypass.
 
-## Environment variables
+## Deploy to surfingcowarena.com
 
-All variables are server-side. Keep local values in the gitignored `.env.local`; put deployed values in Vercel’s environment settings. Never commit credentials.
+1. Create a Vercel project for this repository using the Next.js preset, repository root, Node 22.x, `npm ci`, and `npm run build`. Default output settings are sufficient.
+2. Create separate Neon databases or branches for development, preview, and production. Configure the variables above in their corresponding Vercel environments. Use a stable preview hostname and its own `NEXTAUTH_URL`, secret, and Google callback.
+3. Register the production Google callback **`https://surfingcowarena.com/api/auth/callback/google`**. Configure the real team allowlist; the app’s hostname does not determine which email domains are allowed. Ensure the Google consent screen permits your team or lists them as test users.
+4. Apply migrations to the selected database before serving traffic. Locally, `npm run db:migrate` reads `.env.local`. For preview, use `node --env-file=.env.preview.local scripts/migrate.mjs` with the target connection string in that gitignored file. Clear any old shell-exported `DATABASE_URL`, which takes precedence over file values. Run one migration job at a time. Applied files are recorded and skipped on reruns; migrations are deliberately separate from builds.
+5. Deploy a preview and complete the checks below. Then configure and deploy production with its own credentials. Add surfingcowarena.com to the correct Vercel project and copy the exact DNS records from its Domains settings into Cloudflare. Start with **DNS only**, replace conflicting web records, and leave unrelated records intact. Wait for Vercel’s domain and HTTPS checks to pass. Cloudflare 526 means the origin certificate/domain configuration needs repair.
+6. Configure monitoring of `/health` and enable Neon backup/restore retention before launch. Health returns 200 with `{ "ok": true }` or 503 with `{ "ok": false }`. Rehearse restoring into an isolated database; application rollback does not undo database changes.
 
-| Variable | Purpose |
-| --- | --- |
-| `DATABASE_URL` | Neon Postgres connection string for this environment, including TLS options supplied by Neon. |
-| `NEXTAUTH_URL` | Canonical app origin, with no path: `http://localhost:3000` locally; `https://surfingcowarena.com` in production. |
-| `NEXTAUTH_SECRET` | Random session-signing/encryption secret; use a different secret per environment. Rotating it invalidates existing sessions. |
-| `GOOGLE_CLIENT_ID` | Google OAuth Web application client ID. |
-| `GOOGLE_CLIENT_SECRET` | Corresponding Google OAuth client secret. |
-| `AUTH_ALLOWED_DOMAINS` | Comma-separated exact email domains, without `@`, protocols, or wildcards. Subdomains are not implicitly included. |
-| `AUTH_ALLOWED_EMAILS` | Comma-separated full Google email addresses, useful for individual teammates or guests. |
+## Verify before launch
 
-At least one allowlist must contain an entry. The two lists are combined; entries are trimmed and compared without case sensitivity. Empty allowlists deny everyone. Membership is rechecked on each authenticated request, so removing an entry takes effect for existing sessions too. Sessions last up to eight hours.
+Use a disposable link in the preview database:
 
-If sign-in configuration is missing, the login page reports that sign-in is unavailable and private endpoints remain inaccessible. A successful build does not mean runtime credentials or database migrations are configured.
+- Sign in through an unknown shortcut; confirm login returns to its prefilled creation form. Create the link and find it by name and description.
+- Open both shortcut formats, edit the destination, and confirm both immediately use the new URL. Redeploy and verify the saved link survives.
+- Follow `/setup` to install the browser search template (`https://surfingcowarena.com/%s` in production). Test the `go` keyword, then delete the disposable link and verify the creation form appears again.
+- Sign out and confirm private pages and redirects require login, including on the direct Vercel URL. Anonymous link API requests must return 401, and an unapproved Google account must be denied.
+- Verify `/health`, HTTPS, and real Google sign-in on the intended hostname. Record the tested preview URL and commit before production launch.
 
-## Routes and shortcuts
-
-| Route | Behavior |
-| --- | --- |
-| `/` | Team directory; filter by name, description, or destination URL. |
-| `/new` | Create a shortcut; accepts `?name=wiki` to prefill the name. |
-| `/edit/{name}` | Edit the URL or description; names are immutable. |
-| `/{name}` and `/go/{name}` | After sign-in, issue a non-cached HTTP 302 to the saved URL, or to `/new?name=…` when missing. |
-| `/setup` | Chrome, Edge, and Firefox browser-shortcut instructions. |
-| `/login` | Google sign-in; preserves the original internal destination. |
-| `/api/auth/*` | Sign-in, callback, session, and sign-out endpoints. |
-| `/api/links` | Authenticated `GET` list and `POST` create. |
-| `/api/links/{name}` | Authenticated `GET`, `PATCH`, and `DELETE`. |
-| `/health` | Public database readiness probe: HTTP 200 with `{ "ok": true }`, or HTTP 503 with `{ "ok": false }`. |
-
-The production browser search template is `https://surfingcowarena.com/%s`. The keyword is `go`: this is a browser search shortcut, so literal hostname resolution for `go/wiki` is not provided. Safari users can open shortcuts directly or use the directory.
-
-Names contain 1–64 lowercase letters, digits, or hyphens and start/end with a letter or digit. App route names are reserved. URLs must explicitly use HTTP or HTTPS, contain no credentials or control characters, and fit within 4,096 characters after URL serialization. Descriptions have a 500-character limit.
-
-The API retains the link fields `name`, `url`, `description`, `createdAt`, and `updatedAt`. Mutations require an authenticated session and an `Origin` matching `NEXTAUTH_URL`; create/update also require a JSON object with `Content-Type: application/json`. The request body limit is 32 KiB. Each teammate has a shared limit of 60 mutation attempts per minute across all app instances; a 429 response includes `Retry-After: 60`.
-
-## Checks
-
-These checks need no real Google credentials or hosted database:
+## Local checks
 
 ```bash
-npm run lint
-npm run typecheck
 npm test
-npm audit --omit=dev --audit-level=moderate
+npm run typecheck
 npm run build
-npx playwright install chromium
-npm run test:e2e
+npm audit --omit=dev --audit-level=moderate
 ```
 
-The browser suite starts the production build on `127.0.0.1:4318`; run the build first and keep that port free. CI installs Chromium’s Linux dependencies too.
-
-Unit/integration tests exercise real Postgres SQL through an in-memory PGlite engine while substituting the Neon transport. Browser tests use local test credentials, signed fixture sessions, and a stub for the external Google authorization page. They verify access controls, setup, and sign-out, but do **not** establish that live Google OAuth, Neon networking, or Vercel deployment works. Complete the [live preview checklist](docs/deployment.md#verify-a-live-preview) before launch.
+These checks need no live credentials. Tests cover URL validation/serialization, alias and query normalization, email allowlists, and safe login return paths. They do not verify live OAuth, database connectivity, or the complete UI workflow; use the preview checklist for those.
