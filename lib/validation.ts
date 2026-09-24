@@ -5,11 +5,17 @@ export const RESERVED_NAMES = new Set([
   "go",
   "health",
   "setup",
+  "login",
   "favicon.ico",
 ]);
 
 const NAME_PATTERN = /^[a-z0-9](?:[a-z0-9-]{0,62}[a-z0-9])?$/;
 const DESCRIPTION_MAX = 500;
+export const URL_MAX = 4096;
+
+export function firstParam(value: string | string[] | undefined): string | undefined {
+  return Array.isArray(value) ? value[0] : value;
+}
 
 /** Redirect / omnibox: trim, lowercase, first token only. */
 export function canonicalizeName(raw: string): string {
@@ -51,14 +57,11 @@ export function validateUrl(url: string): string | null {
   if (!url) {
     return "URL is required";
   }
-  const lower = url.toLowerCase();
-  if (
-    lower.startsWith("javascript:") ||
-    lower.startsWith("data:") ||
-    lower.startsWith("file:") ||
-    lower.startsWith("vbscript:")
-  ) {
+  if (!/^https?:\/\//i.test(url)) {
     return "URL must start with http:// or https://";
+  }
+  if ([...url].some((character) => character.charCodeAt(0) < 32 || character.charCodeAt(0) === 127)) {
+    return "URL must not contain control characters";
   }
 
   let parsed: URL;
@@ -76,6 +79,9 @@ export function validateUrl(url: string): string | null {
   }
   if (!parsed.hostname) {
     return "Enter a valid http:// or https:// URL";
+  }
+  if (parsed.href.length > URL_MAX) {
+    return `URL must be ${URL_MAX} characters or fewer after encoding`;
   }
   return null;
 }
@@ -128,7 +134,7 @@ export function validateCreate(body: LinkInput): {
   const descriptionError = validateDescription(description);
   if (descriptionError) return { error: descriptionError };
 
-  return { value: { name, url, description } };
+  return { value: { name, url: new URL(url).href, description } };
 }
 
 export function validateUpdate(body: LinkInput): {
@@ -148,5 +154,5 @@ export function validateUpdate(body: LinkInput): {
   const descriptionError = validateDescription(description);
   if (descriptionError) return { error: descriptionError };
 
-  return { value: { url, description } };
+  return { value: { url: new URL(url).href, description } };
 }

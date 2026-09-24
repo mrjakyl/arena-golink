@@ -17,10 +17,9 @@ import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { GoLink } from "@/lib/types";
 
-export function Directory({ links: initial }: { links: GoLink[] }) {
+export function Directory({ links }: { links: GoLink[] }) {
   const router = useRouter();
   const [query, setQuery] = useState("");
-  const [links, setLinks] = useState(initial);
   const [pendingDelete, setPendingDelete] = useState<GoLink | null>(null);
   const [deleting, setDeleting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -49,7 +48,6 @@ export function Directory({ links: initial }: { links: GoLink[] }) {
         const body = (await response.json().catch(() => null)) as { error?: string } | null;
         throw new Error(body?.error || "Could not delete");
       }
-      setLinks((current) => current.filter((link) => link.name !== target.name));
       setPendingDelete(null);
       router.replace(`/?deleted=${encodeURIComponent(target.name)}`);
       router.refresh();
@@ -63,9 +61,9 @@ export function Directory({ links: initial }: { links: GoLink[] }) {
   if (links.length === 0) {
     return (
       <Flex direction="column" align="start" gap="4" mt="4">
-        <Heading size="8">Arena Go</Heading>
+        <Heading size="8">Arena Path</Heading>
         <Text size="4" color="gray" style={{ maxWidth: 520 }}>
-          Nicknames for internal URLs, shared by everyone who can open this site.
+          Memorable shortcuts to your team’s resources, shared in one place.
         </Text>
         <Flex gap="3" mt="2" wrap="wrap">
           <Button asChild size="3" highContrast>
@@ -85,12 +83,13 @@ export function Directory({ links: initial }: { links: GoLink[] }) {
         <div>
           <Heading size="7">Directory</Heading>
           <Text size="2" color="gray">
-            {links.length} {links.length === 1 ? "link" : "links"} · anyone here can add or edit
+            {links.length} {links.length === 1 ? "link" : "links"} · your team can add or edit
           </Text>
         </div>
       </Flex>
 
       <TextField.Root
+        aria-label="Search links"
         placeholder="Search names and descriptions"
         value={query}
         onChange={(event) => setQuery(event.target.value)}
@@ -102,7 +101,7 @@ export function Directory({ links: initial }: { links: GoLink[] }) {
       </TextField.Root>
 
       {error ? (
-        <Text size="2" color="red">
+        <Text size="2" color="red" role="alert">
           {error}
         </Text>
       ) : null}
@@ -181,7 +180,7 @@ export function Directory({ links: initial }: { links: GoLink[] }) {
         <AlertDialog.Content maxWidth="420px">
           <AlertDialog.Title>Delete go/{pendingDelete?.name}?</AlertDialog.Title>
           <AlertDialog.Description size="2">
-            The shortcut will stop working. Anyone can create this name again later.
+            The shortcut will stop working. A teammate can create this name again later.
           </AlertDialog.Description>
           <Flex gap="3" mt="4" justify="end">
             <Button

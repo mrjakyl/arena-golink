@@ -1,13 +1,7 @@
-import { NextResponse } from "next/server";
+import { redirectForName } from "@/lib/redirect";
 
 export const dynamic = "force-dynamic";
 
-export function GET() {
-  return new NextResponse(null, {
-    status: 302,
-    headers: {
-      Location: "/",
-      "Cache-Control": "no-store, no-cache, must-revalidate",
-    },
-  });
+export async function GET() {
+  return redirectForName("", "/go");
 }

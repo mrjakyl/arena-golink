@@ -10,5 +10,5 @@ export async function GET(
   context: { params: Promise<{ name: string }> },
 ) {
   const { name } = await context.params;
-  return redirectForName(name);
+  return redirectForName(name, `/${encodeURIComponent(name)}`);
 }
