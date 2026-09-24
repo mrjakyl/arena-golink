@@ -14,7 +14,7 @@ import NextLink from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import type { GoLink } from "@/lib/types";
-import { normalizeSubmittedName } from "@/lib/validation";
+import { normalizeSubmittedName, URL_MAX } from "@/lib/validation";
 
 type CreateProps = {
   mode: "create";
@@ -99,7 +99,7 @@ export function LinkForm(props: Props) {
       </div>
 
       {error ? (
-        <Callout.Root color="gray" highContrast variant="surface">
+        <Callout.Root color="red" variant="surface" role="alert">
           <Callout.Icon>
             <InfoCircledIcon />
           </Callout.Icon>
@@ -117,6 +117,7 @@ export function LinkForm(props: Props) {
               value={name}
               onChange={(event) => setName(event.target.value)}
               placeholder="payroll"
+              maxLength={64}
               required
               disabled={isEdit}
               autoComplete="off"
@@ -142,6 +143,7 @@ export function LinkForm(props: Props) {
               required
               type="text"
               inputMode="url"
+              maxLength={URL_MAX}
               autoComplete="off"
               size="3"
             />
@@ -156,6 +158,7 @@ export function LinkForm(props: Props) {
               onChange={(event) => setDescription(event.target.value)}
               placeholder="What this opens, in a few words"
               rows={3}
+              maxLength={500}
             />
           </label>
 

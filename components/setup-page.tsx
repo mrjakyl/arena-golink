@@ -2,25 +2,18 @@
 
 import { Box, Code, Flex, Heading, Link as RadixLink, Separator, Text } from "@radix-ui/themes";
 import NextLink from "next/link";
-import { useEffect, useState } from "react";
 import { CopyButton } from "./copy-button";
 
-export function SetupPage() {
-  const [origin, setOrigin] = useState("");
-
-  useEffect(() => {
-    setOrigin(window.location.origin);
-  }, []);
-
-  const template = origin ? `${origin}/%s` : "https://YOUR-HOST/%s";
+export function SetupPage({ origin }: { origin: string }) {
+  const template = `${origin}/%s`;
 
   return (
     <Flex direction="column" gap="5" style={{ maxWidth: 640 }}>
       <div>
         <Heading size="7">Add the browser shortcut</Heading>
         <Text as="p" color="gray" mt="2">
-          This is how Arena Go is meant to be used. One custom search engine, about 30 seconds,
-          once per browser profile. Safari is not supported in this prototype.
+          Open Arena Path links straight from your address bar. Add this shortcut once per
+          browser profile, then sign in with your team account when prompted.
         </Text>
       </div>
 
@@ -51,7 +44,7 @@ export function SetupPage() {
           <ul style={{ margin: 0, paddingLeft: 20, display: "grid", gap: 8 }}>
             <li>
               <Text size="3">
-                Name: <Code>Arena Go</Code>
+                Name: <Code>Arena Path</Code>
               </Text>
             </li>
             <li>
@@ -92,13 +85,13 @@ export function SetupPage() {
           Safari
         </Heading>
         <Text as="p" size="3" color="gray">
-          Not supported in v1 — Safari has no comparable keyword search. Use Chrome, Edge, or
+          Safari has no comparable keyword search. Use Chrome, Edge, or
           Firefox, or open links from this directory.
         </Text>
       </section>
 
       <Text size="2" color="gray">
-        Anyone who can open this site can add or edit links. Treat it like a shared wiki.{" "}
+        Signed-in teammates can add or edit links. Treat it like a shared wiki.{" "}
         <RadixLink asChild>
           <NextLink href="/">Back to the directory</NextLink>
         </RadixLink>

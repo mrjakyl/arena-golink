@@ -1,27 +1,18 @@
-type Bucket = { count: number; resetAt: number };
+import "server-only";
+import { query } from "@/lib/db";
 
-const buckets = new Map<string, Bucket>();
-const WINDOW_MS = 60_000;
-const MAX_MUTATIONS = 60;
-
-export function allowMutation(ip: string): boolean {
-  const now = Date.now();
-  const current = buckets.get(ip);
-  if (!current || now >= current.resetAt) {
-    buckets.set(ip, { count: 1, resetAt: now + WINDOW_MS });
-    return true;
-  }
-  if (current.count >= MAX_MUTATIONS) {
-    return false;
-  }
-  current.count += 1;
-  return true;
-}
-
-export function clientIp(request: Request): string {
-  const forwarded = request.headers.get("x-forwarded-for");
-  if (forwarded) {
-    return forwarded.split(",")[0]?.trim() || "unknown";
-  }
-  return request.headers.get("x-real-ip") || "unknown";
+/** One bounded counter per teammate, shared across all serverless instances. */
+export async function allowMutation(email: string): Promise<boolean> {
+  const rows = await query(
+    `INSERT INTO mutation_limits (identity, count, "resetAt")
+     VALUES ($1, 1, now() + interval '1 minute')
+     ON CONFLICT (identity) DO UPDATE SET
+       count = CASE WHEN mutation_limits."resetAt" <= now()
+         THEN 1 ELSE LEAST(mutation_limits.count + 1, 61) END,
+       "resetAt" = CASE WHEN mutation_limits."resetAt" <= now()
+         THEN now() + interval '1 minute' ELSE mutation_limits."resetAt" END
+     RETURNING count`,
+    [email.toLowerCase()],
+  );
+  return Number(rows[0]?.count) <= 60;
 }

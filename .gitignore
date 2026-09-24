@@ -7,3 +7,10 @@ data/*.sqlite-*
 .DS_Store
 next-env.d.ts
 *.tsbuildinfo
+.env*
+!.env.example
+.vercel
+.context
+coverage
+playwright-report
+test-results

@@ -3,8 +3,9 @@
 import { Button, Flex, Heading, Link as RadixLink } from "@radix-ui/themes";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
+import { signOut } from "next-auth/react";
 
-export function Header() {
+export function Header({ signedIn }: { signedIn: boolean }) {
   const pathname = usePathname();
   const onNew = pathname === "/new";
 
@@ -27,14 +28,15 @@ export function Header() {
           </NextLink>
         </RadixLink>
       </Flex>
-      <Flex gap="2" align="center">
+      {signedIn ? <Flex gap="3" align="center" wrap="wrap">
         <Button asChild variant="ghost" color="gray">
           <NextLink href="/setup">Setup</NextLink>
         </Button>
         <Button asChild variant={onNew ? "soft" : "solid"} highContrast={!onNew}>
           <NextLink href="/new">New link</NextLink>
         </Button>
-      </Flex>
+        <Button variant="ghost" color="gray" onClick={() => signOut({ callbackUrl: "/" })}>Sign out</Button>
+      </Flex> : null}
     </Flex>
   );
 }

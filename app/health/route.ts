@@ -1,17 +1,17 @@
 import { NextResponse } from "next/server";
-import { listLinks } from "@/lib/db";
+import { checkDatabase } from "@/lib/db";
 
 export const dynamic = "force-dynamic";
 export const runtime = "nodejs";
 
-export function GET() {
+export async function GET() {
   try {
-    listLinks();
+    await checkDatabase();
     return NextResponse.json(
       { ok: true },
       { headers: { "Cache-Control": "no-store" } },
     );
   } catch {
-    return NextResponse.json({ ok: false }, { status: 500 });
+    return NextResponse.json({ ok: false }, { status: 503, headers: { "Cache-Control": "no-store" } });
   }
 }
