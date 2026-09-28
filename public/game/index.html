@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>8-BIT NBA — Arcade Hoops</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body { height: 100%; }
+  body {
+    background: #05060f;
+    background-image: radial-gradient(ellipse at 50% 30%, #0c1024 0%, #05060f 70%);
+    color: #9db2d8;
+    font-family: "Courier New", Courier, monospace;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    overflow: hidden;
+    touch-action: none;
+    user-select: none;
+  }
+  #wrap { position: relative; line-height: 0; }
+  canvas {
+    image-rendering: pixelated;
+    image-rendering: crisp-edges;
+    border: 2px solid #2a2f55;
+    box-shadow: 0 0 0 2px #05060f, 0 0 40px rgba(30,40,90,0.55);
+    background: #000;
+  }
+  #crt {
+    position: absolute; inset: 0; pointer-events: none;
+    background:
+      radial-gradient(ellipse at center, rgba(0,0,0,0) 55%, rgba(0,0,0,0.28) 100%),
+      repeating-linear-gradient(0deg, rgba(0,0,0,0.16) 0px, rgba(0,0,0,0.16) 1px, rgba(0,0,0,0) 1px, rgba(0,0,0,0) 3px);
+    mix-blend-mode: multiply;
+  }
+  footer {
+    font-size: 11px; letter-spacing: 1px; text-align: center;
+    color: #5c6a8a; line-height: 1.7; padding: 0 10px;
+  }
+  footer b { color: #9db2d8; font-weight: bold; }
+  .k { color: #ffd23e; }
+  @media (max-height: 560px) { footer { display: none; } }
+</style>
+</head>
+<body>
+  <div id="wrap">
+    <canvas id="game" width="384" height="216"></canvas>
+    <div id="crt"></div>
+  </div>
+  <footer>
+    <b>8-BIT NBA</b> — P1: <span class="k">&#8592;&#8594;</span> move &nbsp;<span class="k">&#8593;</span> jump/block &nbsp;<span class="k">SPACE</span> shoot (hold &amp; release) &nbsp;<span class="k">X</span> steal &nbsp;<span class="k">SHIFT</span> turbo<br>
+    P2: <span class="k">A D</span> move &nbsp;<span class="k">W</span> jump &nbsp;<span class="k">G</span> shoot &nbsp;<span class="k">H</span> steal &nbsp;<span class="k">S</span> turbo &nbsp;&nbsp;|&nbsp;&nbsp; <span class="k">P</span> pause &nbsp;<span class="k">M</span> sound &nbsp;<span class="k">C</span> scanlines
+  </footer>
+  <script src="game.js" defer></script>
+</body>
+</html>

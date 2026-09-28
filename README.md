@@ -11,6 +11,10 @@ The directory supports search, create, edit, and delete. Both `/{name}` and `/go
 - Fixes for invalid redirect URLs, repeated name query parameters, and stale directory data.
 - Small regression tests using Node’s built-in runner; no additional test framework, linter, or CI configuration.
 
+## 8-BIT NBA
+
+`public/game/` contains a self-contained, fan-made 8-bit arcade basketball game (pure HTML/JS/CSS, no dependencies or build step). Open `/game` — which redirects to `/game/index.html` — for 1P vs CPU (three difficulties) or 2P on one keyboard. Controls and options are listed below the court.
+
 **Handoff:** credentials, the Vercel project, team allowlist, DNS changes, and live preview verification are deferred. Nothing has been deployed. Missing authentication configuration denies private access.
 
 ## Run locally
